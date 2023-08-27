@@ -18,4 +18,10 @@ Using a non-stock operating system also has some clear disadvantages when compar
 
 Some of the major possible disadvantages with using PROS over the stock VEX OS: 
 - Migration difficulty - It would take some time to migrate to PROS.
-- Less support - PROS is developed and maintained by Purdie
+- Less support - PROS is developed and maintained by Purdue students, and therefore could be less stable, updated
+    - Ultimately it is harder to trust the maintainers as they are a 3rd party rather than the 1st party who is running this competition
+
+- Efficiency Difficulty - Considering that it would be more difficult to train and become familiar with the new environment for development, it may make efficency slow, as the whole codebase would have to be rewritten.
+
+# Conclusion
+To conclude, PROS could be a potentially game-changing operating system that would allow for a large change in the codebase and allow for more flexibility and potential with the game and how items are coded, but also requires a large migration change and large time commitment to migrate.
