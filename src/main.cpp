@@ -212,6 +212,13 @@ void usercontrol(void) {
       cat = 0;
     }
 
+    //Elevation
+    if (Controller1.ButtonX.pressing()) {
+      Elevation.spin(vex::directionType::fwd, 140, vex::velocityUnits::pct);
+    } else {
+      Elevation.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+    }
+
     //Intake
     int intake;
     if (Controller1.ButtonB.pressing()) {

@@ -11,6 +11,7 @@ extern controller Controller1;
 extern motor LeftMid;
 extern motor RightMid;
 extern motor Catapult;
+extern motor Elevation;
 extern motor IntakeLeft;
 extern motor IntakeRight;
 
