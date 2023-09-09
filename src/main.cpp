@@ -110,15 +110,15 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 void autonomous(void) {
 //auton();
-std::ifstream file("rerun.txt", std::ios::binary);
+//std::ifstream file("rerun.txt", std::ios::binary);
 /*if (!file) {
   auton();
   return;
 } */
-//int size = 20000;
-//uint8_t data[size];
-std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-//Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
+int size = 20000;
+uint8_t data[size];
+//std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
 
 for (int i=0; i < data.size(); i+=8) {
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
