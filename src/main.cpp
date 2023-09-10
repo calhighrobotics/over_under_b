@@ -120,7 +120,7 @@ uint8_t data[size];
 //std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
 
-for (int i=0; i < data.size(); i+=8) {
+for (int i=0; i < size; i+=8) {
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
   RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
   LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
@@ -135,7 +135,7 @@ for (int i=0; i < data.size(); i+=8) {
   //i += 4*check_next(i, data, 1, 4) - 4;
 }
 
-file.close();
+//file.close();
 
 }
 
