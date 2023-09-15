@@ -253,6 +253,28 @@ void usercontrol(void) {
       endRerun();
     }
   }
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("Right Front Drivetrain Motor: %.2f% ", RightFront.temperature(fahrenheit));
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("Left Front Drivetrain Motor: %.2f% ", LeftFront.temperature(fahrenheit));
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print("Right middle Drivetrain Motor: %.2f% ", RightMid.temperature(fahrenheit));
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print("Left middle Drivetrain Motor: %.2f% ", LeftMid.temperature(fahrenheit));
+    Brain.Screen.setCursor(5, 1);
+    Brain.Screen.print("Right back drivetrain Motor: %.2f% ", RightBack.temperature(fahrenheit));
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print("Left back drivetrain Motor: %.2f% ", LeftBack.temperature(fahrenheit));
+    Brain.Screen.setCursor(7, 1);
+    Brain.Screen.print("Intake left motor: %.2f% ", IntakeLeft.temperature(fahrenheit));
+    Brain.Screen.setCursor(8, 1);
+    Brain.Screen.print("Intake right motor: %.2f% ", IntakeRight.temperature(fahrenheit));
+    Brain.Screen.setCursor(9, 1);
+    Brain.Screen.print("Elevation motor: %.2f% ", Elevation.temperature(fahrenheit));
+    Brain.Screen.setCursor(10, 1);
+    Brain.Screen.print("Catapult motor: %.2f% ", Elevation.temperature(fahrenheit));
 }
 }
 
