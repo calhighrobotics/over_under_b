@@ -120,16 +120,16 @@ uint8_t data[size];
 //std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
 
-for (int i=0; i < size; i+=8) {
+for (int i=0; i < size; i+=6) {
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
   RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
   LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
   LeftBack.spin(vex::directionType::rev, data[i+3], vex::velocityUnits::pct);
-  LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
-  RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
-  Catapult.spin(vex::directionType::fwd, data[i+6], vex::velocityUnits::pct);
-  IntakeLeft.spin(vex::directionType::rev, data[i+7], vex::velocityUnits::pct);
-  IntakeRight.spin(vex::directionType::fwd, data[i+7], vex::velocityUnits::pct);
+  //LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
+  //RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, data[i+4], vex::velocityUnits::pct);
+  IntakeLeft.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
+  IntakeRight.spin(vex::directionType::fwd, data[i+5], vex::velocityUnits::pct);
 
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
@@ -140,31 +140,31 @@ for (int i=0; i < size; i+=8) {
 }
 
 
-void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int intake) {
-      uint8_t arr[8];
+void initRerun(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int intake) {
+      uint8_t arr[6];
       arr[0] = rf;
       arr[1] = rb;
       arr[2] = lf;
       arr[3] = lb;
-      arr[4] = lm;
-      arr[5] = rm;
-      arr[6] = cat;
-      arr[7] = intake;
+      //arr[4] = lm;
+      //arr[5] = rm;
+      arr[4] = cat;
+      arr[5] = intake;
       Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int intake) {
+void saveFrame(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int intake) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
-      uint8_t arr[8];
+      uint8_t arr[6];
       arr[0] = rf;
       arr[1] = rb;
       arr[2] = lf;
       arr[3] = lb;
-      arr[4] = lm;
-      arr[5] = rm;
-      arr[6] = cat;
-      arr[7] = intake;
+      //arr[4] = lm;
+      //arr[5] = rm;
+      arr[4] = cat;
+      arr[5] = intake;
       
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
       
@@ -193,10 +193,10 @@ void usercontrol(void) {
     //Drivetrain
     RightFront.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     RightBack.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
-    RightMid.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
+    //RightMid.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     LeftFront.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(),  vex::velocityUnits::pct);
     LeftBack.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
-    LeftMid.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
+    //LeftMid.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
 
 
     int cat;
@@ -234,10 +234,10 @@ void usercontrol(void) {
 
     int rf = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int rb = Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value();
-    int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
+    //int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int lf = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
     int lb = Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value();
-    int lm = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
+    //int lm = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
 
 
 
@@ -245,9 +245,9 @@ void usercontrol(void) {
     if (Brain.SDcard.isInserted()) {
     if ((Controller1.ButtonUp.pressing() && !rerun)) {
       rerun = true;
-      initRerun(rf, rb, lf, lb, lm, rm, cat, intake);
+      initRerun(rf, rb, lf, lb, /*lm, rm,*/ cat, intake);
     } else if (rerun) {
-      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
+      saveFrame(rf, rb, lf, lb, /*lm, rm,*/ cat, intake);
     }else if (Controller1.ButtonDown.pressing()) {
       rerun = false;
       endRerun();
@@ -260,10 +260,10 @@ void usercontrol(void) {
     Brain.Screen.setCursor(2, 1);
     Brain.Screen.print("Left Front Drivetrain Motor: %.2f% ", LeftFront.temperature(fahrenheit));
     Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("Right middle Drivetrain Motor: %.2f% ", RightMid.temperature(fahrenheit));
-    Brain.Screen.setCursor(4, 1);
-    Brain.Screen.print("Left middle Drivetrain Motor: %.2f% ", LeftMid.temperature(fahrenheit));
-    Brain.Screen.setCursor(5, 1);
+    //Brain.Screen.print("Right middle Drivetrain Motor: %.2f% ", RightMid.temperature(fahrenheit));
+    //Brain.Screen.setCursor(4, 1);
+    //Brain.Screen.print("Left middle Drivetrain Motor: %.2f% ", LeftMid.temperature(fahrenheit));
+    //Brain.Screen.setCursor(5, 1);
     Brain.Screen.print("Right back drivetrain Motor: %.2f% ", RightBack.temperature(fahrenheit));
     Brain.Screen.setCursor(6, 1);
     Brain.Screen.print("Left back drivetrain Motor: %.2f% ", LeftBack.temperature(fahrenheit));
