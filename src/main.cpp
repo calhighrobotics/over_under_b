@@ -135,31 +135,35 @@ while ((c = fgetc(file)) != EOF && i < size) {
 }
 fclose(file);
 
-for (int i=0; i < size; i+=6) {
+for (int i=0; i < size; i+=8) {
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
   RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
   LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
   LeftBack.spin(vex::directionType::rev, data[i+3], vex::velocityUnits::pct);
-  //LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
-  //RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
-  Catapult.spin(vex::directionType::fwd, data[i+4], vex::velocityUnits::pct);
-  IntakeLeft.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
-  IntakeRight.spin(vex::directionType::fwd, data[i+5], vex::velocityUnits::pct);
+  LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
+  RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, data[i+6], vex::velocityUnits::pct);
+  IntakeLeft.spin(vex::directionType::rev, data[i+7], vex::velocityUnits::pct);
+  IntakeRight.spin(vex::directionType::fwd, data[i+7], vex::velocityUnits::pct);
 
 
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("data array: %d ", data[i]);
+    Brain.Screen.print("rf: %d ", data[i]);
     Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print("data array: %d ", data[i+1]);
+    Brain.Screen.print("rb: %d ", data[i+1]);
     Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("data array: %d ", data[i+2]);
+    Brain.Screen.print("lf: %d ", data[i+2]);
     Brain.Screen.setCursor(4, 1);
-    Brain.Screen.print("data array: %d ", data[i+3]);
+    Brain.Screen.print("lb: %d ", data[i+3]);
     Brain.Screen.setCursor(5, 1);
-    Brain.Screen.print("data array: %d ", data[i+4]);
+    Brain.Screen.print("lm: %d ", data[i+4]);
     Brain.Screen.setCursor(6, 1);
-    Brain.Screen.print("data array: %d ", data[i+5]);
+    Brain.Screen.print("rf: %d ", data[i+5]);
+    Brain.Screen.setCursor(7, 1);
+    Brain.Screen.print("ca: %d ", data[i+6]);
+    Brain.Screen.setCursor(8, 1);
+    Brain.Screen.print("in %d ", data[i+7]);
 
   /*
     Brain.Screen.clearScreen();
@@ -191,16 +195,16 @@ for (int i=0; i < size; i+=6) {
 }
 
 
-void initRerun(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int intake) {
-      uint8_t arr[6];
+void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int intake) {
+      uint8_t arr[8];
       arr[0] = rf;
       arr[1] = rb;
       arr[2] = lf;
       arr[3] = lb;
-      //arr[4] = lm;
-      //arr[5] = rm;
-      arr[4] = cat;
-      arr[5] = intake;
+      arr[4] = lm;
+      arr[5] = rm;
+      arr[6] = cat;
+      arr[7] = intake;
 
       uint8_t count[1];
       count[0] = 0;
@@ -208,19 +212,37 @@ void initRerun(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int 
       Brain.SDcard.savefile("count.txt", count, sizeof(count));
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat,int intake) {
+void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
-      uint8_t arr[6];
+      uint8_t arr[8];
       arr[0] = rf;
       arr[1] = rb;
       arr[2] = lf;
       arr[3] = lb;
-      //arr[4] = lm;
-      //arr[5] = rm;
-      arr[4] = cat;
-      arr[5] = intake;
+      arr[4] = lm;
+      arr[5] = rm;
+      arr[6] = cat;
+      arr[7] = intake;
       uint8_t count[1];
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("rf: %d ", arr[0]);
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("rb: %d ", arr[1]);
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print("lf: %d ", arr[2]);
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print("lb: %d ", arr[3]);
+    Brain.Screen.setCursor(5, 1);
+    Brain.Screen.print("lm: %d ", arr[4]);
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print("rf: %d ", arr[5]);
+    Brain.Screen.setCursor(7, 1);
+    Brain.Screen.print("ca: %d ", arr[6]);
+    Brain.Screen.setCursor(8, 1);
+    Brain.Screen.print("in %d ", arr[7]);
 
       FILE* file = fopen("count.txt", "r");
       if (file == nullptr) {Brain.Screen.print("Error opening file");}
@@ -270,10 +292,10 @@ void usercontrol(void) {
     //Drivetrain
     RightFront.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     RightBack.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
-    //RightMid.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
+    RightMid.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     LeftFront.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(),  vex::velocityUnits::pct);
     LeftBack.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
-    //LeftMid.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
+    LeftMid.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
 
 
     int cat;
@@ -324,10 +346,10 @@ void usercontrol(void) {
 
     int rf = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int rb = Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value();
-    //int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
+    int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int lf = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
     int lb = Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value();
-    //int lm = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
+    int lm = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
 
 
 
@@ -335,25 +357,25 @@ void usercontrol(void) {
     if (Brain.SDcard.isInserted()) {
     if ((Controller1.ButtonUp.pressing() && !rerun)) {
       rerun = true;
-      initRerun(rf, rb, lf, lb, cat, intake);
+      initRerun(rf, rb, lf, lb, lm, rm, cat, intake);
     } else if (rerun) {
-      saveFrame(rf, rb, lf, lb, cat, intake);
+      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
     }else if (Controller1.ButtonDown.pressing()) {
       rerun = false;
       endRerun();
     }
   }
-
+/*
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("Right Front Drivetrain Motor: %.2f% ", RightFront.temperature(fahrenheit));
     Brain.Screen.setCursor(2, 1);
     Brain.Screen.print("Left Front Drivetrain Motor: %.2f% ", LeftFront.temperature(fahrenheit));
     Brain.Screen.setCursor(3, 1);
-    //Brain.Screen.print("Right middle Drivetrain Motor: %.2f% ", RightMid.temperature(fahrenheit));
-    //Brain.Screen.setCursor(4, 1);
-    //Brain.Screen.print("Left middle Drivetrain Motor: %.2f% ", LeftMid.temperature(fahrenheit));
-    //Brain.Screen.setCursor(5, 1);
+    Brain.Screen.print("Right middle Drivetrain Motor: %.2f% ", RightMid.temperature(fahrenheit));
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print("Left middle Drivetrain Motor: %.2f% ", LeftMid.temperature(fahrenheit));
+    Brain.Screen.setCursor(5, 1);
     Brain.Screen.print("Right back drivetrain Motor: %.2f% ", RightBack.temperature(fahrenheit));
     Brain.Screen.setCursor(6, 1);
     Brain.Screen.print("Left back drivetrain Motor: %.2f% ", LeftBack.temperature(fahrenheit));
@@ -365,6 +387,7 @@ void usercontrol(void) {
     Brain.Screen.print("Elevation motor: %.2f% ", Elevation.temperature(fahrenheit));
     Brain.Screen.setCursor(10, 1);
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.temperature(fahrenheit));
+    */
 }
 }
 
