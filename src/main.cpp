@@ -111,14 +111,29 @@ void pre_auton(void) {
 void autonomous(void) {
 //auton();
 //std::ifstream file("rerun.txt", std::ios::binary);
-/*if (!file) {
-  auton();
-  return;
-} */
-int size = 20000;
+
+uint8_t count[1];
+FILE* file = fopen("count.txt", "r");
+int c;
+if ((c = fgetc(file)) != EOF) {
+  count[0] = static_cast<uint8_t>(c);
+}
+//Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
+int size = count[0];
+
+
 uint8_t data[size];
 //std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
+//Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
+
+file = fopen("rerun.txt", "r");
+if (file == nullptr) {Brain.Screen.print("Error opening file");}
+int i = 0;
+while ((c = fgetc(file)) != EOF && i < size) {
+  data[i] = static_cast<uint8_t>(c);
+  i++;
+}
+fclose(file);
 
 for (int i=0; i < size; i+=6) {
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
@@ -131,6 +146,42 @@ for (int i=0; i < size; i+=6) {
   IntakeLeft.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
   IntakeRight.spin(vex::directionType::fwd, data[i+5], vex::velocityUnits::pct);
 
+
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("data array: %d ", data[i]);
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("data array: %d ", data[i+1]);
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print("data array: %d ", data[i+2]);
+    Brain.Screen.setCursor(4, 1);
+    Brain.Screen.print("data array: %d ", data[i+3]);
+    Brain.Screen.setCursor(5, 1);
+    Brain.Screen.print("data array: %d ", data[i+4]);
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print("data array: %d ", data[i+5]);
+
+  /*
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("Right Front Drivetrain Motor: %.2f% ", RightFront.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(2, 1);
+    Brain.Screen.print("Left Front Drivetrain Motor: %.2f% ", LeftFront.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(3, 1);
+    Brain.Screen.print("Right back drivetrain Motor: %.2f% ", RightBack.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(6, 1);
+    Brain.Screen.print("Left back drivetrain Motor: %.2f% ", LeftBack.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(7, 1);
+    Brain.Screen.print("Intake left motor: %.2f% ", IntakeLeft.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(8, 1);
+    Brain.Screen.print("Intake right motor: %.2f% ", IntakeRight.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(9, 1);
+    Brain.Screen.print("Elevation motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
+    Brain.Screen.setCursor(10, 1);
+    Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
+    */
+
+  task::sleep(10);
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
 }
@@ -150,10 +201,14 @@ void initRerun(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int 
       //arr[5] = rm;
       arr[4] = cat;
       arr[5] = intake;
+
+      uint8_t count[1];
+      count[0] = 0;
       Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
+      Brain.SDcard.savefile("count.txt", count, sizeof(count));
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int intake) {
+void saveFrame(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat,int intake) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
       uint8_t arr[6];
@@ -165,15 +220,35 @@ void saveFrame(int rf, int rb, int lf, int lb, /*int lm, int rm,*/ int cat, int 
       //arr[5] = rm;
       arr[4] = cat;
       arr[5] = intake;
+      uint8_t count[1];
+
+      FILE* file = fopen("count.txt", "r");
+      if (file == nullptr) {Brain.Screen.print("Error opening file");}
+      int c;
+      if ((c = fgetc(file)) != EOF) {
+        count[0] = static_cast<uint8_t>(c);
+      }
+      fclose(file);
+      //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
+      count[0] += 6;
       
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
+      Brain.SDcard.savefile("count.txt", count, sizeof(count));
       
       
 
 }
 
 void endRerun(void) {
-    uint8_t data[20000];
+    uint8_t count[1];
+    FILE* file = fopen("count.txt", "r");
+    if (file == nullptr) {Brain.Screen.print("Error opening file");}
+    int c;
+    if ((c = fgetc(file)) != EOF) {
+      count[0] = static_cast<uint8_t>(c);
+    }
+    //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
+    uint8_t data[count[0]];
     int written = Brain.SDcard.loadfile("rerun.txt", data, sizeof(data));
     Brain.Screen.clearScreen();
       if (written > 0) {
@@ -187,6 +262,8 @@ void endRerun(void) {
 
 void usercontrol(void) {
   bool rerun = false;
+  digital_out dig1 = digital_out(Brain.ThreeWirePort.B);
+  digital_out dig2 = digital_out(Brain.ThreeWirePort.A);
 
   while (1) {
 
@@ -219,12 +296,25 @@ void usercontrol(void) {
       Elevation.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
     }
 
+    //pneumatics
+    if (Controller1.ButtonL1.pressing()) {
+      dig1.set(true);
+      dig2.set(true);
+    } else if (Controller1.ButtonL2.pressing()) {
+      dig1.set(false);
+      dig2.set(false);
+    }
+
     //Intake
     int intake;
-    if (Controller1.ButtonB.pressing()) {
+    if (Controller1.ButtonR1.pressing()) {
       IntakeLeft.spin(vex::directionType::rev, 140, vex::velocityUnits::pct);
       IntakeRight.spin(vex::directionType::fwd, 140, vex::velocityUnits::pct);
       intake = 140;
+    } else if (Controller1.ButtonR2.pressing()) {
+      IntakeLeft.spin(vex::directionType::rev, -140, vex::velocityUnits::pct);
+      IntakeRight.spin(vex::directionType::fwd, -140, vex::velocityUnits::pct);
+      intake = -140;
     } else {
       intake = 0;
       IntakeLeft.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
@@ -245,9 +335,9 @@ void usercontrol(void) {
     if (Brain.SDcard.isInserted()) {
     if ((Controller1.ButtonUp.pressing() && !rerun)) {
       rerun = true;
-      initRerun(rf, rb, lf, lb, /*lm, rm,*/ cat, intake);
+      initRerun(rf, rb, lf, lb, cat, intake);
     } else if (rerun) {
-      saveFrame(rf, rb, lf, lb, /*lm, rm,*/ cat, intake);
+      saveFrame(rf, rb, lf, lb, cat, intake);
     }else if (Controller1.ButtonDown.pressing()) {
       rerun = false;
       endRerun();
@@ -278,8 +368,29 @@ void usercontrol(void) {
 }
 }
 
+/*
+void autonomous(void) {
+    RightFront.spin(vex::directionType::rev, -100, vex::velocityUnits::pct);
+    RightBack.spin(vex::directionType::rev, -100, vex::velocityUnits::pct);
+    LeftFront.spin(vex::directionType::rev, -100,  vex::velocityUnits::pct);
+    LeftBack.spin(vex::directionType::rev, -100, vex::velocityUnits::pct);
+    task::sleep(500);
 
+    RightFront.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+    RightBack.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+    LeftFront.spin(vex::directionType::rev, 0,  vex::velocityUnits::pct);
+    LeftBack.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
 
+    for (int i=0; i < 50; i++) {
+      Catapult.spin(vex::directionType::fwd, 140, vex::velocityUnits::pct);
+
+      task::sleep(100);
+
+      Catapult.spin(vex::directionType::fwd, -140, vex::velocityUnits::pct);
+
+      task::sleep(900);
+    }
+}*/
 
 int main() {
   Competition.autonomous(autonomous);
