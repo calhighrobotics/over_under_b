@@ -13,7 +13,12 @@ motor RightFront = motor(PORT2, ratio18_1, true);
 motor LeftBack = motor(PORT13, ratio18_1, false);
 motor RightBack = motor(PORT6, ratio18_1, true);
 controller Controller1 = controller(primary);
+<<<<<<< HEAD
+motor LeftMid = motor(PORT5, ratio18_1, false);
+=======
+controller Controller2 = controller(partner);
 motor LeftMid = motor(PORT11, ratio18_1, false);
+>>>>>>> 4600a47d035e54605eb84f9eb8caff30508d4d03
 motor Elevation = motor(PORT10, ratio18_1, true);
 motor RightMid = motor(PORT8, ratio18_1, true);
 motor Catapult = motor(PORT7, ratio18_1, false);

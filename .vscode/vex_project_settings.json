@@ -1,10 +1,14 @@
 {
 	"project": {
 		"name": "VEX_2023-24",
-		"slot": 1,
+		"slot": 3,
 		"description": "Empty V5 C++ Project",
 		"platform": "V5",
-		"creationDate": "Sat, 07 Oct 2023 23:33:55 GMT",
+<<<<<<< HEAD
+		"creationDate": "Sun, 15 Oct 2023 00:57:22 GMT",
+=======
+		"creationDate": "Sun, 08 Oct 2023 00:37:12 GMT",
+>>>>>>> 4600a47d035e54605eb84f9eb8caff30508d4d03
 		"language": "cpp",
 		"sdkVersion": "V5_20220726_10_00_00",
 		"cpp": {
