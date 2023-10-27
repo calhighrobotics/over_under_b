@@ -136,7 +136,15 @@ while ((c = fgetc(file)) != EOF && i < size) {
 }
 fclose(file);
 
+  Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("size: %d ", size);
+
 for (int i=0; i < size; i+=8) {
+  Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("iteration %d ", i);
+
   RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
   RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
   LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
@@ -147,8 +155,15 @@ for (int i=0; i < size; i+=8) {
   IntakeLeft.spin(vex::directionType::rev, data[i+7], vex::velocityUnits::pct);
   IntakeRight.spin(vex::directionType::fwd, data[i+7], vex::velocityUnits::pct);
 
+if (i == 152) {
+  Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+    Brain.Screen.print("should end here");
+}
 
-    Brain.Screen.clearScreen();
+
+  if (i == 160) {
+Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("rf: %d ", data[i]);
     Brain.Screen.setCursor(2, 1);
@@ -183,6 +198,8 @@ for (int i=0; i < size; i+=8) {
     std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", data[7]);
 
+  }
+    
   /*
     Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
@@ -204,11 +221,24 @@ for (int i=0; i < size; i+=8) {
     */
 
   task::sleep(10);
+
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
 }
 
 //file.close();
+
+
+  RightFront.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  RightBack.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  LeftFront.spin(vex::directionType::rev, 0,  vex::velocityUnits::pct);
+  LeftBack.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  LeftMid.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  RightMid.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+  IntakeLeft.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+  IntakeRight.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+
 
 }
 
@@ -232,7 +262,7 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
       Brain.SDcard.savefile("count.txt", count, sizeof(count));
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake) {
+void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake, int pr) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
       uint8_t arr[8];
@@ -245,8 +275,8 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       arr[6] = cat;
       arr[7] = intake;
       uint8_t count[1];
-
-    Brain.Screen.clearScreen();
+    /*if (pr == 50) {
+          Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("rf: %d ", arr[0]);
     Brain.Screen.setCursor(2, 1);
@@ -264,6 +294,7 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
     Brain.Screen.setCursor(8, 1);
     Brain.Screen.print("in %d ", arr[7]);
 
+
     std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", arr[0]);
     std::cout << "\x1B[2J\x1B[H";
@@ -280,6 +311,7 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
     printf("\033rf: %d ", arr[6]);
     std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", arr[7]);
+    }*/
 
 
 
@@ -291,7 +323,9 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       }
       fclose(file);
       //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-      count[0] += 6;
+      count[0] += 8;
+      Brain.Screen.clearScreen();
+      Brain.Screen.print("c: %d ", count[0]);
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[32m Rerun function is running\n");
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
@@ -331,6 +365,7 @@ void usercontrol(void) {
   digital_out dig1 = digital_out(Brain.ThreeWirePort.B);
   digital_out dig2 = digital_out(Brain.ThreeWirePort.A);
 
+  int pr = 0;
   while (1) {
 
     //Drivetrain
@@ -418,7 +453,8 @@ void usercontrol(void) {
     if (rerun) {
       
       
-      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
+      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake, pr);
+      pr++;
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[37m Capturing rerun data\n");
     }
