@@ -12,8 +12,7 @@ extern motor LeftMid;
 extern motor RightMid;
 extern motor Catapult;
 extern motor Elevation;
-extern motor IntakeLeft;
-extern motor IntakeRight;
+extern motor Intake;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
