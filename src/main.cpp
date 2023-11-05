@@ -121,7 +121,7 @@ void autonomous(void) {
     count = c;
 }
 //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-int size = count;
+int size = count * 8;
 
 
 uint8_t data[size];
@@ -142,18 +142,28 @@ fclose(file);
     Brain.Screen.print("size: %d ", size);
 
 for (int i=0; i < size; i+=8) {
-  Brain.Screen.clearScreen();
+/*  Brain.Screen  .clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("iteration %d ", i);
+    Brain.Screen.print("iteration %d ", i);*/
 
-  RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
-  RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
-  LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
-  LeftBack.spin(vex::directionType::rev, data[i+3], vex::velocityUnits::pct);
-  LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
-  RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
-  Catapult.spin(vex::directionType::fwd, data[i+6], vex::velocityUnits::pct);
-  Intake.spin(vex::directionType::rev, data[i+7], vex::velocityUnits::pct);
+  int dat[8];
+  for (int c=0;c<8;c++) {
+    
+    if (data[i+c] > 127) {
+      dat[c] = 127 - static_cast<int>(data[i+c]);
+    } else {
+      dat[c] = data[i+c];
+    }
+  }
+
+  RightFront.spin(vex::directionType::rev, dat[0], vex::velocityUnits::pct);
+  RightBack.spin(vex::directionType::rev, dat[1], vex::velocityUnits::pct);
+  LeftFront.spin(vex::directionType::rev, dat[2],  vex::velocityUnits::pct);
+  LeftBack.spin(vex::directionType::rev, dat[3], vex::velocityUnits::pct);
+  LeftMid.spin(vex::directionType::rev, dat[4], vex::velocityUnits::pct);
+  RightMid.spin(vex::directionType::rev, dat[5], vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, dat[6], vex::velocityUnits::pct);
+  Intake.spin(vex::directionType::rev, dat[7], vex::velocityUnits::pct);
 
 if (i == 152) {
   Brain.Screen.clearScreen();
