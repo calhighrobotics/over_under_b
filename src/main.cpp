@@ -114,14 +114,14 @@ void autonomous(void) {
 //std::ifstream file("rerun.txt", std::ios::binary);
   std::cout << "\x1B[2J\x1B[H";
   printf("\033[33m Started autonomous routine.\n");
-  uint8_t count[1];
+  int count;
   FILE* file = fopen("count.txt", "r");
   int c;
   if ((c = fgetc(file)) != EOF) {
-    count[0] = static_cast<uint8_t>(c);
+    count = c;
 }
 //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-int size = count[0];
+int size = count;
 
 
 uint8_t data[size];
@@ -253,12 +253,19 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
       arr[6] = cat;
       arr[7] = intake;
 
-      uint8_t count[1];
-      count[0] = 0;
+      int count;
+      count = 1;
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[33m Rerun called, array written.\n");
       Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
-      Brain.SDcard.savefile("count.txt", count, sizeof(count));
+      
+      FILE * countFile;
+      countFile = fopen("count.txt", "w+");
+
+      fprintf(countFile, "%d", count);
+
+
+      fclose(countFile);
 }
 
 void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake, int pr) {
@@ -281,7 +288,7 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       std::cout << "\033[32m Catapult: " << arr[6];
       arr[7] = intake;
       std::cout << "\033[32m Intake: " << arr[7];
-      uint8_t count[1];
+      int count;
     /*if (pr == 50) {
           Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
@@ -328,31 +335,40 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       }
       int c;
       if ((c = fgetc(file)) != EOF) {
-        count[0] = static_cast<uint8_t>(c);
+        count = c;
       }
       fclose(file);
       //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-      count[0] += 8;
+      count += 1;
       Brain.Screen.clearScreen();
-      Brain.Screen.print("c: %d ", count[0]);
+      Brain.Screen.print("c: %d ", count);
       printf("\033[32m Rerun function is running\n");
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
-      Brain.SDcard.savefile("count.txt", count, sizeof(count));
+
+      FILE * countFile;
+      countFile = fopen("count.txt", "w+");
+
+      fprintf(countFile, "%d", count);
+
+
+      fclose(countFile);
       
       
 
 }
 
 void endRerun(void) {
-    uint8_t count[1];
+    int count;
     FILE* file = fopen("count.txt", "r");
     if (file == nullptr) {Brain.Screen.print("Error opening file");}
     int c;
     if ((c = fgetc(file)) != EOF) {
-      count[0] = static_cast<uint8_t>(c);
+      count = c;
     }
+
+    fclose(file);
     //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-    uint8_t data[count[0]];
+    uint8_t data[static_cast<uint8_t>(count)];
     int written = Brain.SDcard.loadfile("rerun.txt", data, sizeof(data));
     Brain.Screen.clearScreen();
       if (written > 0) {
@@ -388,15 +404,16 @@ void usercontrol(void) {
     int cat;
     //Catapult
     if (Controller1.ButtonA.pressing()) {
-      std::cout << "\x1B[2J\x1B[H";
+      
       Catapult.spin(vex::directionType::fwd, 140, vex::velocityUnits::pct);
       cat = 140;
-      printf("\033[33m Button A pressed\n");
+      std::cout << "\x1B[2J\x1B[H";
+      printf("\033[33m Catapult on\n");
     } else if (Controller1.ButtonY.pressing()) {
       Catapult.spin(vex::directionType::fwd, -140, vex::velocityUnits::pct);
       cat = -140;
       std::cout << "\x1B[2J\x1B[H";
-      printf("\033[33m Button Y pressed\n"); 
+      printf("\033[33m Catapult reversed\n"); 
     } else {
       Catapult.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
       cat = 0;
@@ -413,11 +430,11 @@ void usercontrol(void) {
 
     //pneumatics
     if (Controller1.ButtonL1.pressing()) {
-      printf("\033[35m Button L1 pressed\n");
+      printf("\033[35m Pneumatic 1 on\n");
       dig1.set(true);
       dig2.set(true);
     } else if (Controller1.ButtonL2.pressing()) {
-      printf("\033[34m Button L2 pressed\n");
+      printf("\033[34m Pneumatic 1 off\n");
       dig1.set(false);
       dig2.set(false);
     }
@@ -425,11 +442,11 @@ void usercontrol(void) {
     //Intake
     int intake;
     if (Controller1.ButtonR1.pressing()) {
-      printf("\033[32m Button R1 pressed\n");
+      printf("\033[32m Intake Turned on\n");
       Intake.spin(vex::directionType::rev, 140, vex::velocityUnits::pct);
       intake = 140;
     } else if (Controller1.ButtonR2.pressing()) {
-      printf("\033[31m Button R2 pressed\n");
+      printf("\033[31m Intake Turned off\n");
       Intake.spin(vex::directionType::rev, -140, vex::velocityUnits::pct);
       intake = -140;
     } else {
@@ -457,13 +474,14 @@ void usercontrol(void) {
     } 
     if (rerun) {
       
-      
+      std::cout << "\x1B[2J\x1B[H";
       saveFrame(rf, rb, lf, lb, lm, rm, cat, intake, pr);
       pr++;
-      std::cout << "\x1B[2J\x1B[H";
+      
       printf("\033[37m Capturing rerun data\n");
     }
     if (Controller1.ButtonDown.pressing()) {
+      Brain.Screen.print("Stopped");
       rerun = false;
       printf("\033[37m rerun is stopped\r");
       //endRerun();
