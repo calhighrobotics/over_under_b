@@ -17,7 +17,7 @@ controller Controller2 = controller(partner);
 motor LeftMid = motor(PORT5, ratio18_1, false);
 // motor Elevation = motor(PORT10, ratio18_1, true);
 motor RightMid = motor(PORT10, ratio18_1, true);
-motor Catapult = motor(PORT7, ratio18_1, false);
+motor Catapult = motor(PORT7, ratio18_1, true);
 motor Intake = motor(PORT9, ratio18_1, false);
 
 // VEXcode generated functions

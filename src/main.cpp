@@ -110,78 +110,66 @@ void pre_auton(void) {
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 void autonomous(void) {
-//auton();
-//std::ifstream file("rerun.txt", std::ios::binary);
-  std::cout << "\x1B[2J\x1B[H";
-  printf("\033[33m Started autonomous routine.\n");
-  uint8_t count[1];
-  FILE* file = fopen("count.txt", "r");
-  int c;
-  if ((c = fgetc(file)) != EOF) {
-    count[0] = static_cast<uint8_t>(c);
-}
-//Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-int size = count[0];
 
+
+std::cout << "\x1B[2J\x1B[H";
+//std::cout << size;
+
+int size = 15000;
 
 uint8_t data[size];
-//std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-//Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
 
-file = fopen("rerun.txt", "r");
-if (file == nullptr) {Brain.Screen.print("Error opening file");}
-int i = 0;
-while ((c = fgetc(file)) != EOF && i < size) {
-  data[i] = static_cast<uint8_t>(c);
-  i++;
-}
-fclose(file);
+
+
+//std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
+
 
   Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("size: %d ", size);
 
 for (int i=0; i < size; i+=8) {
-  Brain.Screen.clearScreen();
+/*  Brain.Screen  .clearScreen();
     Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("iteration %d ", i);
+    Brain.Screen.print("iteration %d ", i);*/
 
-  RightFront.spin(vex::directionType::rev, data[i], vex::velocityUnits::pct);
-  RightBack.spin(vex::directionType::rev, data[i+1], vex::velocityUnits::pct);
-  LeftFront.spin(vex::directionType::rev, data[i+2],  vex::velocityUnits::pct);
-  LeftBack.spin(vex::directionType::rev, data[i+3], vex::velocityUnits::pct);
-  LeftMid.spin(vex::directionType::rev, data[i+4], vex::velocityUnits::pct);
-  RightMid.spin(vex::directionType::rev, data[i+5], vex::velocityUnits::pct);
-  Catapult.spin(vex::directionType::fwd, data[i+6], vex::velocityUnits::pct);
-  Intake.spin(vex::directionType::rev, data[i+7], vex::velocityUnits::pct);
+  int dat[8];
+  for (int c=0;c<8;c++) {
+    
+    if (data[i+c] > 127) {
+      dat[c] = 127 - static_cast<int>(data[i+c]);
+    } else {
+      dat[c] = data[i+c];
+    }
+  }
 
-if (i == 152) {
+  RightFront.spin(vex::directionType::rev, dat[0], vex::velocityUnits::pct);
+  RightBack.spin(vex::directionType::rev, dat[1], vex::velocityUnits::pct);
+  LeftFront.spin(vex::directionType::rev, dat[2],  vex::velocityUnits::pct);
+  LeftBack.spin(vex::directionType::rev, dat[3], vex::velocityUnits::pct);
+  LeftMid.spin(vex::directionType::rev, dat[4], vex::velocityUnits::pct);
+  RightMid.spin(vex::directionType::rev, dat[5], vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, dat[6], vex::velocityUnits::pct);
+  Intake.spin(vex::directionType::rev, dat[7], vex::velocityUnits::pct);
+  std::cout << "\x1B[2J\x1B[H";
+   std::cout << "\033[32m Right front: " << dat[0];
+      std::cout << "\033[32m Right back: " << dat[1];
+      std::cout << "\033[32m Left front: " << dat[2];
+      std::cout << "\033[32m Left back: " << dat[3];
+      std::cout << "\033[32m Left Middle: " << dat[4];
+      std::cout << "\033[32m Right Middle: " << dat[5];
+      std::cout << "\033[32m Catapult: " << dat[6];
+      std::cout << "\033[32m Intake: " << dat[7];
+
+/*if (i == 152) {
   Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("should end here");
-}
+}*/
 
 
-  if (i == 160) {
-Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("rf: %d ", data[i]);
-    Brain.Screen.setCursor(2, 1);
-    Brain.Screen.print("rb: %d ", data[i+1]);
-    Brain.Screen.setCursor(3, 1);
-    Brain.Screen.print("lf: %d ", data[i+2]);
-    Brain.Screen.setCursor(4, 1);
-    Brain.Screen.print("lb: %d ", data[i+3]);
-    Brain.Screen.setCursor(5, 1);
-    Brain.Screen.print("lm: %d ", data[i+4]);
-    Brain.Screen.setCursor(6, 1);
-    Brain.Screen.print("rf: %d ", data[i+5]);
-    Brain.Screen.setCursor(7, 1);
-    Brain.Screen.print("ca: %d ", data[i+6]);
-    Brain.Screen.setCursor(8, 1);
-    Brain.Screen.print("in %d ", data[i+7]);
-
-    std::cout << "\x1B[2J\x1B[H";
+   /* std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", data[0]);
     std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", data[1]);
@@ -196,9 +184,9 @@ Brain.Screen.clearScreen();
     std::cout << "\x1B[2J\x1B[H";
     printf("\033rf: %d ", data[6]);
     std::cout << "\x1B[2J\x1B[H";
-    printf("\033rf: %d ", data[7]);
+    printf("\033rf: %d ", data[7]);*/
 
-  }
+  
     
   /*
     Brain.Screen.clearScreen();
@@ -218,7 +206,7 @@ Brain.Screen.clearScreen();
     Brain.Screen.print("Elevation motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
     Brain.Screen.setCursor(10, 1);
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
-    */
+    */ 
 
   task::sleep(10);
 
@@ -253,35 +241,31 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
       arr[6] = cat;
       arr[7] = intake;
 
-      uint8_t count[1];
-      count[0] = 0;
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[33m Rerun called, array written.\n");
       Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
-      Brain.SDcard.savefile("count.txt", count, sizeof(count));
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake, int pr) {
+void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
       uint8_t arr[8];
       arr[0] = rf;
-      std::cout << "\033[32m Right front: " << arr[0];
+      std::cout << "\033[32m Right front: " << static_cast<int>(arr[0]);
       arr[1] = rb;
-      std::cout << "\033[32m Right back: " << arr[1];
+      std::cout << "\033[32m Right back: " << static_cast<int>(arr[1]);
       arr[2] = lf;
-      std::cout << "\033[32m Left front: " << arr[2];
+      std::cout << "\033[32m Left front: " << static_cast<int>(arr[2]);
       arr[3] = lb;
-      std::cout << "\033[32m Left back: " << arr[3];
+      std::cout << "\033[32m Left back: " << static_cast<int>(arr[3]);
       arr[4] = lm;
-      std::cout << "\033[32m Left Middle: " << arr[4];
+      std::cout << "\033[32m Left Middle: " << static_cast<int>(arr[4]);
       arr[5] = rm;
-      std::cout << "\033[32m Right Middle: " << arr[5];
+      std::cout << "\033[32m Right Middle: " << static_cast<int>(arr[5]);
       arr[6] = cat;
-      std::cout << "\033[32m Catapult: " << arr[6];
+      std::cout << "\033[32m Catapult: " << static_cast<int>(arr[6]);
       arr[7] = intake;
-      std::cout << "\033[32m Intake: " << arr[7];
-      uint8_t count[1];
+      std::cout << "\033[32m Intake: " << static_cast<int>(arr[7]);
     /*if (pr == 50) {
           Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
@@ -322,22 +306,13 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
 
 
 
-      FILE* file = fopen("count.txt", "r");
-      if (file == nullptr) {
-        Brain.Screen.print("Error opening file");
-      }
-      int c;
-      if ((c = fgetc(file)) != EOF) {
-        count[0] = static_cast<uint8_t>(c);
-      }
-      fclose(file);
+
+
       //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
-      count[0] += 8;
       Brain.Screen.clearScreen();
-      Brain.Screen.print("c: %d ", count[0]);
+      //Brain.Screen.print("c: %d ", count[0]);
       printf("\033[32m Rerun function is running\n");
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
-      Brain.SDcard.savefile("count.txt", count, sizeof(count));
       
       
 
@@ -373,7 +348,6 @@ void usercontrol(void) {
   digital_out dig1 = digital_out(Brain.ThreeWirePort.B);
   digital_out dig2 = digital_out(Brain.ThreeWirePort.A);
 
-  int pr = 0;
   while (1) {
 
     //Drivetrain
@@ -458,8 +432,7 @@ void usercontrol(void) {
     if (rerun) {
       
       
-      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake, pr);
-      pr++;
+      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[37m Capturing rerun data\n");
     }
