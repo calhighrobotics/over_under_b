@@ -115,7 +115,7 @@ void autonomous(void) {
 std::cout << "\x1B[2J\x1B[H";
 //std::cout << size;
 
-int size = 15000;
+int size = 75000;
 
 uint8_t data[size];
 
@@ -208,7 +208,7 @@ for (int i=0; i < size; i+=8) {
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
     */ 
 
-  task::sleep(10);
+  task::sleep(2);
 
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
@@ -347,8 +347,10 @@ void endRerun(void) {
 
 void usercontrol(void) {
   bool rerun = false;
-  digital_out dig1 = digital_out(Brain.ThreeWirePort.B);
-  digital_out dig2 = digital_out(Brain.ThreeWirePort.A);
+  digital_out dig1 = digital_out(Brain.ThreeWirePort.A);
+  digital_out dig2 = digital_out(Brain.ThreeWirePort.B);
+  digital_out dig3 = digital_out(Brain.ThreeWirePort.C);
+  digital_out dig4 = digital_out(Brain.ThreeWirePort.D);
 
   while (1) {
 
@@ -390,13 +392,29 @@ void usercontrol(void) {
 
     //pneumatics
     if (Controller1.ButtonL1.pressing()) {
-      printf("\033[35m Pneumatic 1 on\n");
+      printf("\033[35m Pneumatic 1 & 2 on\n");
       dig1.set(true);
       dig2.set(true);
-    } else if (Controller1.ButtonL2.pressing()) {
-      printf("\033[34m Pneumatic 1 off\n");
+    } else {
+      printf("\033[34m Pneumatic 1 & 2 off\n");
       dig1.set(false);
       dig2.set(false);
+    }
+
+    if (Controller1.ButtonL2.pressing()) {
+      printf("\033[35m Pneumatic 3 on\n");
+      dig3.set(true);
+    } else {
+      printf("\033[34m Pneumatic 3 off\n");
+      dig3.set(false);
+    }
+
+    if (Controller1.ButtonR1.pressing()) {
+      printf("\033[35m Pneumatic 4 on\n");
+      dig4.set(true);
+    } else {
+      printf("\033[34m Pneumatic 4 off\n");
+      dig4.set(false);
     }
 
     //Intake
