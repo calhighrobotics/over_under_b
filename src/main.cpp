@@ -115,7 +115,7 @@ void autonomous(void) {
 std::cout << "\x1B[2J\x1B[H";
 //std::cout << size;
 
-int size = 75000;
+int size = 15000;
 
 uint8_t data[size];
 
@@ -146,7 +146,7 @@ for (int i=0; i < size; i+=8) {
 
   RightFront.spin(vex::directionType::rev, dat[0], vex::velocityUnits::pct);
   RightBack.spin(vex::directionType::rev, dat[1], vex::velocityUnits::pct);
-  LeftFront.spin(vex::directionType::rev, dat[2],  vex::velocityUnits::pct);
+  LeftFront.spin(vex::directionType::rev, -1 * dat[2],  vex::velocityUnits::pct);
   LeftBack.spin(vex::directionType::rev, dat[3], vex::velocityUnits::pct);
   LeftMid.spin(vex::directionType::rev, dat[4], vex::velocityUnits::pct);
   RightMid.spin(vex::directionType::rev, dat[5], vex::velocityUnits::pct);
@@ -358,7 +358,7 @@ void usercontrol(void) {
     RightFront.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     RightBack.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
     RightMid.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
-    LeftFront.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(),  vex::velocityUnits::pct);
+    LeftFront.spin(vex::directionType::rev, -1 * (Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value()),  vex::velocityUnits::pct);
     LeftBack.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
     LeftMid.spin(vex::directionType::rev, Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value(), vex::velocityUnits::pct);
 
