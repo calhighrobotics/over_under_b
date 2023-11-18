@@ -412,7 +412,7 @@ void usercontrol(void) {
     }
 
 
-    int rf = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
+    int rf = Controller1.Axis3.value() - Controllje1.Axis1.value() - Controller1.Axis4.value();
     int rb = Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value();
     int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int lf = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
