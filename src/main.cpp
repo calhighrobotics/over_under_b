@@ -28,8 +28,12 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-//#include <auton.cpp>
+#include <chrono>
+#include <thread>
 
+//#include <auton.cpp>
+std::ofstream ofs;
+std::ifstream ifs;
 
 using namespace vex;
 
@@ -112,12 +116,17 @@ void pre_auton(void) {
 void autonomous(void) {
 
 
-std::cout << "\x1B[2J\x1B[H";
-//std::cout << size;
+  std::cout << "\x1B[2J\x1B[H";
+  //std::cout << size;
 
-int size = 15000;
+  int size = Brain.SDcard.size("rerun.txt");
 
-uint8_t data[size];
+  int testtime;
+  ifs.open("test.txt");
+  ifs >> testtime;
+  ifs.close();
+
+  uint8_t data[size];
 
 
 
@@ -125,9 +134,12 @@ uint8_t data[size];
 Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
 
 
-  Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1, 1);
-    Brain.Screen.print("size: %d ", size);
+Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+  Brain.Screen.print("size: %d ", size);
+  Brain.Screen.setCursor(3, 1);
+  Brain.Screen.print("size: %d ", testtime);
+
 
 for (int i=0; i < size; i+=8) {
 /*  Brain.Screen  .clearScreen();
@@ -153,14 +165,14 @@ for (int i=0; i < size; i+=8) {
   Catapult.spin(vex::directionType::fwd, dat[6], vex::velocityUnits::pct);
   Intake.spin(vex::directionType::rev, dat[7], vex::velocityUnits::pct);
   std::cout << "\x1B[2J\x1B[H";
-   std::cout << "\033[32m Right front: " << dat[0];
-      std::cout << "\033[32m Right back: " << dat[1];
-      std::cout << "\033[32m Left front: " << dat[2];
-      std::cout << "\033[32m Left back: " << dat[3];
-      std::cout << "\033[32m Left Middle: " << dat[4];
-      std::cout << "\033[32m Right Middle: " << dat[5];
-      std::cout << "\033[32m Catapult: " << dat[6];
-      std::cout << "\033[32m Intake: " << dat[7];
+  std::cout << "\033[32m Right front: " << dat[0];
+  std::cout << "\033[32m Right back: " << dat[1];
+  std::cout << "\033[32m Left front: " << dat[2];
+  std::cout << "\033[32m Left back: " << dat[3];
+  std::cout << "\033[32m Left Middle: " << dat[4];
+  std::cout << "\033[32m Right Middle: " << dat[5];
+  std::cout << "\033[32m Catapult: " << dat[6];
+  std::cout << "\033[32m Intake: " << dat[7];
 
 /*if (i == 152) {
   Brain.Screen.clearScreen();
@@ -208,7 +220,7 @@ for (int i=0; i < size; i+=8) {
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
     */ 
 
-  task::sleep(2);
+  this_thread::sleep_for(std::chrono::microseconds((testtime / (size / 8)) - 700);
 
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
@@ -246,25 +258,35 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
       Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
 }
 
+
+uint8_t convertInt_Uint8(int num) {
+  uint8_t fin;
+  if (num < 0) {
+    num = 127 + -1 * num;
+  } 
+  fin = num;
+  return fin;
+}
+
 void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
       uint8_t arr[8];
-      arr[0] = rf;
+      arr[0] = convertInt_Uint8(rf);
       std::cout << "\033[32m Right front: " << static_cast<int>(arr[0]);
-      arr[1] = rb;
+      arr[1] = convertInt_Uint8(rb);
       std::cout << "\033[32m Right back: " << static_cast<int>(arr[1]);
-      arr[2] = lf;
+      arr[2] = convertInt_Uint8(lf);
       std::cout << "\033[32m Left front: " << static_cast<int>(arr[2]);
-      arr[3] = lb;
+      arr[3] = convertInt_Uint8(lb);
       std::cout << "\033[32m Left back: " << static_cast<int>(arr[3]);
-      arr[4] = lm;
+      arr[4] = convertInt_Uint8(lm);
       std::cout << "\033[32m Left Middle: " << static_cast<int>(arr[4]);
-      arr[5] = rm;
+      arr[5] = convertInt_Uint8(rm);
       std::cout << "\033[32m Right Middle: " << static_cast<int>(arr[5]);
-      arr[6] = cat;
+      arr[6] = convertInt_Uint8(cat);
       std::cout << "\033[32m Catapult: " << static_cast<int>(arr[6]);
-      arr[7] = intake;
+      arr[7] = convertInt_Uint8(intake);
       std::cout << "\033[32m Intake: " << static_cast<int>(arr[7]);
     /*if (pr == 50) {
           Brain.Screen.clearScreen();
@@ -311,7 +333,6 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
       Brain.Screen.clearScreen();
       //Brain.Screen.print("c: %d ", count[0]);
-      printf("\033[32m Rerun function is running\n");
       Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
       
       
@@ -323,6 +344,7 @@ void endRerun(void) {
     FILE* file = fopen("count.txt", "r");
     if (file == nullptr) {Brain.Screen.print("Error opening file");}
     int c;
+    
     if ((c = fgetc(file)) != EOF) {
       count = c;
     }
@@ -351,8 +373,12 @@ void usercontrol(void) {
   digital_out dig2 = digital_out(Brain.ThreeWirePort.B);
   digital_out dig3 = digital_out(Brain.ThreeWirePort.C);
   digital_out dig4 = digital_out(Brain.ThreeWirePort.D);
+  int timeStart, timeEnd;
+
+  int timeStar, timeEn;
 
   while (1) {
+    
 
     //Drivetrain
     RightFront.spin(vex::directionType::rev, Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value(), vex::velocityUnits::pct);
@@ -396,7 +422,6 @@ void usercontrol(void) {
       dig1.set(true);
       dig2.set(true);
     } else {
-      printf("\033[34m Pneumatic 1 & 2 off\n");
       dig1.set(false);
       dig2.set(false);
     }
@@ -405,7 +430,6 @@ void usercontrol(void) {
       printf("\033[35m Pneumatic 3 on\n");
       dig3.set(true);
     } else {
-      printf("\033[34m Pneumatic 3 off\n");
       dig3.set(false);
     }
 
@@ -413,7 +437,6 @@ void usercontrol(void) {
       printf("\033[35m Pneumatic 4 on\n");
       dig4.set(true);
     } else {
-      printf("\033[34m Pneumatic 4 off\n");
       dig4.set(false);
     }
 
@@ -433,13 +456,12 @@ void usercontrol(void) {
     }
 
 
-    int rf = Controller1.Axis3.value() - Controllje1.Axis1.value() - Controller1.Axis4.value();
+    int rf = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int rb = Controller1.Axis3.value() - Controller1.Axis1.value() + Controller1.Axis4.value();
     int rm = Controller1.Axis3.value() - Controller1.Axis1.value() - Controller1.Axis4.value();
     int lf = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
     int lb = Controller1.Axis3.value() + Controller1.Axis1.value() - Controller1.Axis4.value();
     int lm = Controller1.Axis3.value() + Controller1.Axis1.value() + Controller1.Axis4.value();
-
 
 
     //Rerun 
@@ -449,20 +471,42 @@ void usercontrol(void) {
       printf("\033[37m rerun is activated\n");
       rerun = true;
       initRerun(rf, rb, lf, lb, lm, rm, cat, intake);
+      timeStart = vex::timer::systemHighResolution();
+      timeStar = vex::timer::systemHighResolution();
     } 
     if (rerun) {
-      
-      
       saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
       std::cout << "\x1B[2J\x1B[H";
-      printf("\033[37m Capturing rerun data\n");
+
+      timeEn = vex::timer::systemHighResolution();
+      int timeTota = timeEn - timeStar;
+
+      std::cout << timeTota;
+      timeStar = vex::timer::systemHighResolution();
     }
     if (Controller1.ButtonDown.pressing()) {
+      timeEnd = vex::timer::systemHighResolution();
+      
       Brain.Screen.print("Stopped");
       rerun = false;
       printf("\033[37m rerun is stopped\r");
+      int timeTotal = timeEnd - timeStart;
+
+      Brain.Screen.clearScreen();
+      Brain.Screen.setCursor(4, 1);
+
+      Brain.Screen.print("%d", timeTotal);
+      ofs.open("test.txt", std::ofstream::out);
+      ofs << timeTotal;
+      ofs.close();
+
       //endRerun();
     }
+
+    if (Controller1.ButtonRight.pressing()) {
+      autonomous();
+    }
+
   }
 /*
     Brain.Screen.clearScreen();
