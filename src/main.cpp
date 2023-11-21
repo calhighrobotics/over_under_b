@@ -220,7 +220,7 @@ for (int i=0; i < size; i+=8) {
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
     */ 
 
-  this_thread::sleep_for(std::chrono::microseconds((testtime / (size / 8)) - 700);
+  this_thread::sleep_for(std::chrono::microseconds((testtime / (size / 8)) + 300));
 
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
