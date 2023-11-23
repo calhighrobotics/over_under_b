@@ -115,6 +115,8 @@ void pre_auton(void) {
 /*---------------------------------------------------------------------------*/
 void autonomous(void) {
 
+  digital_out wing1 = digital_out(Brain.ThreeWirePort.A);
+  digital_out wing2 = digital_out(Brain.ThreeWirePort.B);
 
   std::cout << "\x1B[2J\x1B[H";
   //std::cout << size;
@@ -141,13 +143,13 @@ Brain.Screen.clearScreen();
   Brain.Screen.print("size: %d ", testtime);
 
 
-for (int i=0; i < size; i+=8) {
+for (int i=0; i < size; i+=9) {
 /*  Brain.Screen  .clearScreen();
     Brain.Screen.setCursor(1, 1);
     Brain.Screen.print("iteration %d ", i);*/
 
-  int dat[8];
-  for (int c=0;c<8;c++) {
+  int dat[9];
+  for (int c=0;c<9;c++) {
     
     if (data[i+c] > 127) {
       dat[c] = 127 - static_cast<int>(data[i+c]);
@@ -173,6 +175,15 @@ for (int i=0; i < size; i+=8) {
   std::cout << "\033[32m Right Middle: " << dat[5];
   std::cout << "\033[32m Catapult: " << dat[6];
   std::cout << "\033[32m Intake: " << dat[7];
+
+  if (dat[8] == 2) {
+    wing1.set(true);
+    wing2.set(true);
+  }
+  if (dat[8] == 1) {
+    wing1.set(false);
+    wing2.set(false);
+  }
 
 /*if (i == 152) {
   Brain.Screen.clearScreen();
@@ -220,7 +231,7 @@ for (int i=0; i < size; i+=8) {
     Brain.Screen.print("Catapult motor: %.2f% ", Elevation.velocity(vex::velocityUnits::pct));
     */ 
 
-  this_thread::sleep_for(std::chrono::microseconds((testtime / (size / 8)) + 300));
+  this_thread::sleep_for(std::chrono::microseconds((testtime / (size / 9)) + 300));
 
   //task::sleep(check_next(i, data, 1, 4)*10);
   //i += 4*check_next(i, data, 1, 4) - 4;
@@ -242,8 +253,8 @@ for (int i=0; i < size; i+=8) {
 }
 
 
-void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int intake) {
-      uint8_t arr[8];
+void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int intake, int wings) {
+      uint8_t arr[9];
       arr[0] = rf;
       arr[1] = rb;
       arr[2] = lf;
@@ -252,6 +263,7 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
       arr[5] = rm;
       arr[6] = cat;
       arr[7] = intake;
+      arr[8] = wings;
 
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[33m Rerun called, array written.\n");
@@ -268,10 +280,10 @@ uint8_t convertInt_Uint8(int num) {
   return fin;
 }
 
-void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake) {
+void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intake, int wings) {
       //brain.SDcard.savefile(const char *name, uint8_t *buffer, uint32_t len);
       //"RFront.spin(vex::directionType::rev, rf, vex::velocityUnits::pct);"
-      uint8_t arr[8];
+      uint8_t arr[9];
       arr[0] = convertInt_Uint8(rf);
       std::cout << "\033[32m Right front: " << static_cast<int>(arr[0]);
       arr[1] = convertInt_Uint8(rb);
@@ -288,6 +300,9 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       std::cout << "\033[32m Catapult: " << static_cast<int>(arr[6]);
       arr[7] = convertInt_Uint8(intake);
       std::cout << "\033[32m Intake: " << static_cast<int>(arr[7]);
+      arr[8] = convertInt_Uint8(wings);
+      std::cout << "\033[32m Intake: " << static_cast<int>(arr[8]);
+
     /*if (pr == 50) {
           Brain.Screen.clearScreen();
     Brain.Screen.setCursor(1, 1);
@@ -369,10 +384,9 @@ void endRerun(void) {
 
 void usercontrol(void) {
   bool rerun = false;
-  digital_out dig1 = digital_out(Brain.ThreeWirePort.A);
-  digital_out dig2 = digital_out(Brain.ThreeWirePort.B);
-  digital_out dig3 = digital_out(Brain.ThreeWirePort.C);
-  digital_out dig4 = digital_out(Brain.ThreeWirePort.D);
+  digital_out wing1 = digital_out(Brain.ThreeWirePort.A);
+  digital_out wing2 = digital_out(Brain.ThreeWirePort.B);
+
   int timeStart, timeEnd;
 
   int timeStar, timeEn;
@@ -417,28 +431,32 @@ void usercontrol(void) {
     // }
 
     //pneumatics
+    int wings;
+
     if (Controller1.ButtonL1.pressing()) {
       printf("\033[35m Pneumatic 1 & 2 on\n");
-      dig1.set(true);
-      dig2.set(true);
+      wing1.set(true);
+      wing2.set(true);
+      wings = 2;
     } else {
-      dig1.set(false);
-      dig2.set(false);
+      wing1.set(false);
+      wing2.set(false);
+      wings = 1;
     }
 
-    if (Controller1.ButtonL2.pressing()) {
-      printf("\033[35m Pneumatic 3 on\n");
-      dig3.set(true);
-    } else {
-      dig3.set(false);
-    }
+    // if (Controller1.ButtonL2.pressing()) {
+    //   printf("\033[35m Pneumatic 3 on\n");
+    //   dig3.set(true);
+    // } else {
+    //   dig3.set(false);
+    // }
 
-    if (Controller1.ButtonR1.pressing()) {
-      printf("\033[35m Pneumatic 4 on\n");
-      dig4.set(true);
-    } else {
-      dig4.set(false);
-    }
+    // if (Controller1.ButtonR1.pressing()) {
+    //   printf("\033[35m Pneumatic 4 on\n");
+    //   dig4.set(true);
+    // } else {
+    //   dig4.set(false);
+    // }
 
     //Intake
     int intake;
@@ -470,12 +488,12 @@ void usercontrol(void) {
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[37m rerun is activated\n");
       rerun = true;
-      initRerun(rf, rb, lf, lb, lm, rm, cat, intake);
+      initRerun(rf, rb, lf, lb, lm, rm, cat, intake, wings);
       timeStart = vex::timer::systemHighResolution();
       timeStar = vex::timer::systemHighResolution();
     } 
     if (rerun) {
-      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake);
+      saveFrame(rf, rb, lf, lb, lm, rm, cat, intake, wings);
       std::cout << "\x1B[2J\x1B[H";
 
       timeEn = vex::timer::systemHighResolution();
