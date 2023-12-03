@@ -391,6 +391,9 @@ void usercontrol(void) {
 
   int timeStar, timeEn;
 
+  bool wingsOn = false;
+  bool pressedL1 = false;
+
   while (1) {
     
 
@@ -433,12 +436,20 @@ void usercontrol(void) {
     //pneumatics
     int wings;
 
-    if (Controller1.ButtonL1.pressing()) {
+    if (Controller1.ButtonL1.pressing() && !pressedL1) {
+      pressedL1 = true;
+      wingsOn = !wingsOn;
+    } else if (!Controller1.ButtonL1.pressing()) {
+      pressedL1 = false;
+    }
+
+    if(wingsOn) {
       printf("\033[35m Pneumatic 1 & 2 on\n");
       wing1.set(true);
       wing2.set(true);
       wings = 2;
-    } else {
+    }
+    else {
       wing1.set(false);
       wing2.set(false);
       wings = 1;
