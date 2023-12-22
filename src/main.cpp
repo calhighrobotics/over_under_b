@@ -121,10 +121,10 @@ void autonomous(void) {
   std::cout << "\x1B[2J\x1B[H";
   //std::cout << size;
 
-  int size = Brain.SDcard.size("rerun.txt");
+  int size = Brain.SDcard.size("rerunh.txt");
 
   int testtime;
-  ifs.open("test.txt");
+  ifs.open("testh.txt");
   ifs >> testtime;
   ifs.close();
 
@@ -133,7 +133,7 @@ void autonomous(void) {
 
 
 //std::vector<uint8_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-Brain.SDcard.loadfile("rerun.txt", reinterpret_cast<uint8_t*>(data), size);
+Brain.SDcard.loadfile("rerunh.txt", reinterpret_cast<uint8_t*>(data), size);
 
 
 Brain.Screen.clearScreen();
@@ -164,8 +164,8 @@ for (int i=0; i < size; i+=9) {
   LeftBack.spin(vex::directionType::rev, dat[3], vex::velocityUnits::pct);
   LeftMid.spin(vex::directionType::rev, dat[4], vex::velocityUnits::pct);
   RightMid.spin(vex::directionType::rev, dat[5], vex::velocityUnits::pct);
-  Catapult.spin(vex::directionType::fwd, dat[6], vex::velocityUnits::pct);
-  Intake.spin(vex::directionType::rev, dat[7], vex::velocityUnits::pct);
+  Catapult.spin(vex::directionType::fwd, -8 * dat[6], vex::velocityUnits::pct);
+  Intake.spin(vex::directionType::rev, -5 * dat[7], vex::velocityUnits::pct);
   std::cout << "\x1B[2J\x1B[H";
   std::cout << "\033[32m Right front: " << dat[0];
   std::cout << "\033[32m Right back: " << dat[1];
@@ -267,7 +267,7 @@ void initRerun(int rf, int rb, int lf, int lb, int lm, int rm, int cat, int inta
 
       std::cout << "\x1B[2J\x1B[H";
       printf("\033[33m Rerun called, array written.\n");
-      Brain.SDcard.savefile("rerun.txt", arr, sizeof(arr));
+      Brain.SDcard.savefile("rerunh.txt", arr, sizeof(arr));
 }
 
 
@@ -348,7 +348,7 @@ void saveFrame(int rf, int rb, int lf, int lb, int lm, int rm, int cat,int intak
       //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
       Brain.Screen.clearScreen();
       //Brain.Screen.print("c: %d ", count[0]);
-      Brain.SDcard.appendfile("rerun.txt", arr, sizeof(arr));
+      Brain.SDcard.appendfile("rerunh.txt", arr, sizeof(arr));
       
       
 
@@ -367,7 +367,7 @@ void endRerun(void) {
     fclose(file);
     //Brain.SDcard.loadfile("count.txt", reinterpret_cast<uint8_t*>(count), 1);
     uint8_t data[static_cast<uint8_t>(count)];
-    int written = Brain.SDcard.loadfile("rerun.txt", data, sizeof(data));
+    int written = Brain.SDcard.loadfile("rerunh.txt", data, sizeof(data));
     Brain.Screen.clearScreen();
       if (written > 0) {
         std::cout << "\x1B[2J\x1B[H";
@@ -393,6 +393,7 @@ void usercontrol(void) {
 
   bool wingsOn = false;
   bool pressedL1 = false;
+
 
   while (1) {
     
@@ -454,6 +455,7 @@ void usercontrol(void) {
       wing2.set(false);
       wings = 1;
     }
+
 
     // if (Controller1.ButtonL2.pressing()) {
     //   printf("\033[35m Pneumatic 3 on\n");
@@ -525,7 +527,7 @@ void usercontrol(void) {
       Brain.Screen.setCursor(4, 1);
 
       Brain.Screen.print("%d", timeTotal);
-      ofs.open("test.txt", std::ofstream::out);
+      ofs.open("testh.txt", std::ofstream::out);
       ofs << timeTotal;
       ofs.close();
 
