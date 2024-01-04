@@ -8,7 +8,7 @@ using code = vision::code;
 brain Brain;
 
 // VEXcode device constructors
-motor LeftFront = motor(PORT10, ratio18_1, false);
+motor LeftFront = motor(PORT5, ratio18_1, false);
 motor RightFront = motor(PORT6, ratio18_1, true);
 motor LeftBack = motor(PORT7, ratio18_1, false);
 motor RightBack = motor(PORT8, ratio18_1, true);
